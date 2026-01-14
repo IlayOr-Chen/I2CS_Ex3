@@ -53,6 +53,10 @@ public class Ex3Algo implements PacManAlgo{
 
             Map2D dists = map.allDistance(pacmanPos, BLUE);
 
+            // Mode 1 -
+            int dir = escapeFromBlackGhosts(ghosts, dists);
+            if(dir != Game.STAY) return dir;
+
             // Mode 2 -
             Pixel2D closestPink = closestTarget(PINK);
             if(closestPink != null)
@@ -91,6 +95,82 @@ public class Ex3Algo implements PacManAlgo{
 		return dirs[ind];
 	}
 
+    private int escapeFromBlackGhosts(GhostCL[] ghosts, Map2D dists) {
+        int minGhostPath = -1;
+        Pixel2D closestGhost = null;
+
+        // check every ghost
+        for(GhostCL g : ghosts) {
+            // if the ghost is white - eatable
+            if(g.remainTimeAsEatable(CODE) > 0) continue;
+
+            // get the current ghost pixel
+            String[] ghostPos = g.getPos(CODE).toString().split(",");
+            Pixel2D ghostPixel = new Index2D(Integer.parseInt(ghostPos[0]), Integer.parseInt(ghostPos[1]));
+
+            // find the shortest path from the pacman to the current ghost
+            Pixel2D[] ghostPath = map.shortestPath(pacmanPos, ghostPixel, BLUE);
+            int ghostPathLength = ghostPath.length;
+
+            // find the closest ghost - the smallest path between the pacman and the ghost
+            if(minGhostPath == -1 || minGhostPath > ghostPathLength) {
+                minGhostPath = ghostPathLength;
+                closestGhost = ghostPixel;
+            }
+        }
+
+        // if I haven't found any ghosts of the smallest path from the pacman to a ghost is smaller than 8 - ignore
+        if(closestGhost == null || minGhostPath >= 8) return Game.STAY;
+
+        return escapeGhost(closestGhost, dists);
+    }
+
+    private int escapeGhost(Pixel2D ghost, Map2D dists) {
+        int bestDir = Game.STAY;
+        int bestDist = dists.getPixel(ghost);
+
+        int[] dirs = {Game.UP, Game.DOWN, Game.LEFT, Game.RIGHT};
+
+        // check every direction the ghost can do
+        for(int dir : dirs) {
+            Pixel2D next = pixelStep(pacmanPos, dir);
+            // check if the pixel is valid
+            if(!map.isInside(next)) continue;
+            if(map.getPixel(next) == BLUE) continue;
+
+            // check the distance between the pacman and the ghost
+            int ghostD = map.allDistance(next, BLUE).getPixel(ghost);
+            // find the biggest distance
+            if(ghostD > bestDist) {
+                bestDist = ghostD;
+                bestDir = dir;
+            }
+        }
+        return bestDir;
+    }
+
+    private Pixel2D pixelStep(Pixel2D from, int dir) {
+        int x = from.getX();
+        int y = from.getY();
+
+        int w = map.getWidth();
+        int h = map.getHeight();
+
+        if(dir == Game.UP) {
+            y = (y + 1) % h;
+        }
+        else if(dir == Game.DOWN) {
+            y = (y - 1 + h) % h;
+        }
+        else if(dir == Game.LEFT) {
+            x = (x - 1 + w) % w;
+        }
+        else if(dir == Game.RIGHT) {
+            x = (x + 1) % w;
+        }
+
+        return new Index2D(x, y);
+    }
 
 
 
