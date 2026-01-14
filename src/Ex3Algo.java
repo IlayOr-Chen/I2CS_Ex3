@@ -13,6 +13,16 @@ import java.awt.*;
  */
 public class Ex3Algo implements PacManAlgo{
 	private int _count;
+    private Pixel2D pacmanPos;
+    private Map2D map;
+
+    private static final int CODE = 0;
+    private static final int BLUE = Game.getIntColor(Color.BLUE, CODE);
+    private static final int PINK = Game.getIntColor(Color.PINK, CODE);
+    private static final int BLACK = Game.getIntColor(Color.BLACK, CODE);
+    private static final int GREEN = Game.getIntColor(Color.GREEN, CODE);
+    private static final int WHITE = Game.getIntColor(Color.WHITE, CODE);
+
 	public Ex3Algo() {_count=0;}
 	@Override
 	/**
@@ -27,20 +37,26 @@ public class Ex3Algo implements PacManAlgo{
 	 */
 	public int move(PacmanGame game) {
 		if(_count==0 || _count==300) {
-			int code = 0;
 			int[][] board = game.getGame(0);
 			printBoard(board);
-			int blue = Game.getIntColor(Color.BLUE, code);
-			int pink = Game.getIntColor(Color.PINK, code);
-			int black = Game.getIntColor(Color.BLACK, code);
-			int green = Game.getIntColor(Color.GREEN, code);
-			System.out.println("Blue=" + blue + ", Pink=" + pink + ", Black=" + black + ", Green=" + green);
-			String pos = game.getPos(code).toString();
+			System.out.println("Blue=" + BLUE + ", Pink=" + PINK + ", Black=" + BLACK + ", Green=" + GREEN);
+			String pos = game.getPos(CODE).toString();
 			System.out.println("Pacman coordinate: "+pos);
-			GhostCL[] ghosts = game.getGhosts(code);
+			GhostCL[] ghosts = game.getGhosts(CODE);
 			printGhosts(ghosts);
 			int up = Game.UP, left = Game.LEFT, down = Game.DOWN, right = Game.RIGHT;
+
+            String[] p = pos.split(",");
+            int x = Integer.parseInt(p[0]);
+            int y = Integer.parseInt(p[1]);
+            pacmanPos = new Index2D(x, y);
+            map = new Map(board);
+
+            Pixel2D closestPink = closestPink();
+            if(closestPink != null)
+                return directionTo(closestPink);
 		}
+
 		_count++;
 		int dir = randomDir();
 		return dir;
@@ -65,4 +81,52 @@ public class Ex3Algo implements PacManAlgo{
 		int ind = (int)(Math.random()*dirs.length);
 		return dirs[ind];
 	}
+
+
+
+    private Pixel2D closestPink() {
+        final int PINK = Game.getIntColor(Color.PINK, 0);
+        Pixel2D ans = null;
+        int minPinkPath = -1;
+
+        for (int x = 0; x < map.getWidth(); x++) {
+            for (int y = 0; y < map.getHeight(); y++) {
+                Pixel2D currPixel = new Index2D(x,y);
+                int currPixelColor = map.getPixel(currPixel);
+
+                if(currPixelColor == PINK) {
+                    Pixel2D[] pinkPath = map.shortestPath(pacmanPos, currPixel, BLUE);
+                    int pinkPathLength = pinkPath.length;
+                    if(minPinkPath == -1 || minPinkPath > pinkPathLength) {
+                        minPinkPath = pinkPathLength;
+                        ans = new Index2D(pinkPath[1]);
+                    }
+                }
+            }
+        }
+        return ans;
+    }
+
+    private int directionTo(Pixel2D next) {
+        int px = pacmanPos.getX();
+        int py = pacmanPos.getY();
+
+        int nx = next.getX();
+        int ny = next.getY();
+
+        int w = map.getWidth();
+        int h = map.getHeight();
+
+        if (nx == px && ( (py + 1) % h ) == ny)
+            return Game.UP;
+        else if (nx == px && ( (py - 1 + h) % h ) == ny)
+            return Game.DOWN;
+        else if (ny == py && ( (px - 1 + w) % w ) == nx)
+            return Game.LEFT;
+        else if (ny == py && ( (px + 1) % w ) == nx)
+            return Game.RIGHT;
+
+        return Game.STAY;
+    }
+
 }
