@@ -44,7 +44,6 @@ public class Ex3Algo implements PacManAlgo{
 			System.out.println("Pacman coordinate: "+pos);
 			GhostCL[] ghosts = game.getGhosts(CODE);
 			printGhosts(ghosts);
-			int up = Game.UP, left = Game.LEFT, down = Game.DOWN, right = Game.RIGHT;
 
             String[] p = pos.split(",");
             int x = Integer.parseInt(p[0]);
@@ -52,14 +51,24 @@ public class Ex3Algo implements PacManAlgo{
             pacmanPos = new Index2D(x, y);
             map = new Map(board);
 
-            Pixel2D closestPink = closestPink();
+            Map2D dists = map.allDistance(pacmanPos, BLUE);
+
+            // Mode 2 -
+            Pixel2D closestPink = closestTarget(PINK);
             if(closestPink != null)
                 return directionTo(closestPink);
+
+            // Mode 3 -
+            Pixel2D closestGreen = closestTarget(GREEN);
+            if(closestGreen != null)
+                return directionTo(closestGreen);
+
+            // Mode 4 -
+
 		}
 
 		_count++;
-		int dir = randomDir();
-		return dir;
+		return randomDir();
 	}
 	private static void printBoard(int[][] b) {
 		for(int y =0;y<b[0].length;y++){
@@ -84,22 +93,25 @@ public class Ex3Algo implements PacManAlgo{
 
 
 
-    private Pixel2D closestPink() {
-        final int PINK = Game.getIntColor(Color.PINK, 0);
+
+    private Pixel2D closestTarget(int color) {
         Pixel2D ans = null;
-        int minPinkPath = -1;
+        int minPath = -1;
 
         for (int x = 0; x < map.getWidth(); x++) {
             for (int y = 0; y < map.getHeight(); y++) {
                 Pixel2D currPixel = new Index2D(x,y);
                 int currPixelColor = map.getPixel(currPixel);
 
-                if(currPixelColor == PINK) {
-                    Pixel2D[] pinkPath = map.shortestPath(pacmanPos, currPixel, BLUE);
-                    int pinkPathLength = pinkPath.length;
-                    if(minPinkPath == -1 || minPinkPath > pinkPathLength) {
-                        minPinkPath = pinkPathLength;
-                        ans = new Index2D(pinkPath[1]);
+                if(currPixelColor == color) {
+                    Pixel2D[] path = map.shortestPath(pacmanPos, currPixel, BLUE);
+                    if(path != null) {
+                        int pathLength = path.length;
+
+                        if(minPath == -1 || minPath > pathLength) {
+                            minPath = pathLength;
+                            ans = new Index2D(path[1]);
+                        }
                     }
                 }
             }
