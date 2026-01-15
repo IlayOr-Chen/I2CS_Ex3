@@ -64,8 +64,11 @@ allDistance(pacmanPosition, BLUE)
 ## מצב 3 – ירוק (נקודת כוח)
 
 ### מתי נכנסים למצב זה?
-- קיימת נקודה ירוקה על המפה.
-- רק אם הירוק קרוב מספיק - פחות מ־4 צעדים.
+- קיימת נקודה ירוקה על המפה
+- בדרך לנקודה ורודה
+- .
+- רק אם הירוק לא פעיל - אכלתי כבר ירוק והמפלצות כבר לבנות
+- וגם אם הירוק קרוב מספיק - פחות מ־4 צעדים.
 
 ### מה פאקמן עושה?
 - מתקדם לעבר הנקודה הירוקה הקרובה ביותר לפי מפת המרחקים.
@@ -126,7 +129,7 @@ Input: pacmanPos, ghosts[], map
 
 4. Mode 3 – Move to green power dot (if useful)
    closestGreen = find closest green dot
-   if closestGreen exists and distance <= 4 steps:
+   if closestGreen exists and distance <= 4 steps and greenPower not active:
        path = shortestPath(pacmanPos, closestGreen, BLUE)
        return next step along path
 
