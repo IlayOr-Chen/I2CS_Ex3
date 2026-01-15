@@ -53,22 +53,30 @@ public class Ex3Algo implements PacManAlgo{
 
             Map2D dists = map.allDistance(pacmanPos, BLUE);
 
-            // Mode 1 -
+            // Mode 1
             int dir = escapeFromBlackGhosts(ghosts, dists);
             if(dir != Game.STAY) return dir;
+            
+            // Mode 2
+            dir = eatWhiteGhosts(ghosts, dists);
+            if(dir != Game.STAY) return dir;
 
-            // Mode 2 -
-            Pixel2D closestPink = closestTarget(PINK);
-            if(closestPink != null)
-                return directionTo(closestPink);
+            // Mode 3 - Go to green if it is useful
+            Pixel2D[] closestGreenPath = closestTargetPath(GREEN);
+            int greenPathLength = 0;
+            if(closestGreenPath != null) {
+                int distToGreen = dists.getPixel(closestGreenPath[closestGreenPath.length - 1]);
 
-            // Mode 3 -
-            Pixel2D closestGreen = closestTarget(GREEN);
-            if(closestGreen != null)
-                return directionTo(closestGreen);
+                // only go to green if it is within 8 steps (safe to reach before being in danger)
+                if(distToGreen >= 0 && distToGreen < 4) {
+                    return directionTo(closestGreenPath[1]);
+                }
+            }
 
-            // Mode 4 -
-
+            // Mode 4
+            Pixel2D[] closestPinkPath = closestTargetPath(PINK);
+            if(closestPinkPath != null)
+                return directionTo(closestPinkPath[1]);
 		}
 
 		_count++;
@@ -146,6 +154,7 @@ public class Ex3Algo implements PacManAlgo{
                 bestDir = dir;
             }
         }
+
         return bestDir;
     }
 
@@ -172,10 +181,8 @@ public class Ex3Algo implements PacManAlgo{
         return new Index2D(x, y);
     }
 
-
-
-    private Pixel2D closestTarget(int color) {
-        Pixel2D ans = null;
+    private Pixel2D[] closestTargetPath(int color) {
+        Pixel2D[] ans = null;
         int minPath = -1;
 
         for (int x = 0; x < map.getWidth(); x++) {
@@ -190,7 +197,7 @@ public class Ex3Algo implements PacManAlgo{
 
                         if(minPath == -1 || minPath > pathLength) {
                             minPath = pathLength;
-                            ans = new Index2D(path[1]);
+                            ans = path;
                         }
                     }
                 }
@@ -198,6 +205,37 @@ public class Ex3Algo implements PacManAlgo{
         }
         return ans;
     }
+
+    private int eatWhiteGhosts(GhostCL[] ghosts, Map2D dists) {
+        Pixel2D target = null;
+        int minDist = Integer.MAX_VALUE;
+        final int maxEatDist = 4;
+
+        for(GhostCL g : ghosts) {
+            double time = g.remainTimeAsEatable(CODE);
+            if(time <= 0) continue; // isn't a white ghost
+
+            // get the white ghost pixel
+            String[] ghostPos = g.getPos(CODE).toString().split(",");
+            Pixel2D ghostPixel = new Index2D(Integer.parseInt(ghostPos[0]), Integer.parseInt(ghostPos[1]));
+            int ghostDist = dists.getPixel(ghostPixel);
+
+            // check if this ghost is the closest and the pacman has enough time to eat the ghost,
+            // and the white ghost is close to the pacman - 4 squares long
+            if(ghostDist >= 0 && ghostDist < minDist && ghostDist < time - 1 && ghostDist <= maxEatDist) {
+                minDist = ghostDist;
+                target = ghostPixel;
+            }
+        }
+
+        if(target == null) return Game.STAY;
+
+        Pixel2D[] path = map.shortestPath(pacmanPos, target, BLUE);
+        if(path == null || path.length < 2) return Game.STAY;
+
+        return directionTo(path[1]);
+    }
+
 
     private int directionTo(Pixel2D next) {
         int px = pacmanPos.getX();
