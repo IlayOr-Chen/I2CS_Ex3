@@ -65,14 +65,15 @@ allDistance(pacmanPosition, BLUE)
 
 ### מתי נכנסים למצב זה?
 - קיימת נקודה ירוקה על המפה.
-- המהלך הירוק עדיף על הורוד כאשר הפאקמן קרוב יותר לירוק.
+- רק אם הירוק קרוב מספיק - פחות מ־4 צעדים.
 
 ### מה פאקמן עושה?
 - מתקדם לעבר הנקודה הירוקה הקרובה ביותר לפי מפת המרחקים.
 - זז צעד אחד לכיוון הנקודה.
 
 ### המטרה:
-להפוך מפלצות מסוכנות למפלצות אכילות ולאפשר תנועה בטוחה יותר על הלוח.
+להפוך מפלצות מסוכנות למפלצות אכילות ולאפשר תנועה בטוחה יותר על הלוח
+הירוק משמש בעיקר להגנה ולתנועה בטוחה.
 
 ---
 
@@ -81,7 +82,8 @@ allDistance(pacmanPosition, BLUE)
 ### מתי נכנסים למצב זה?
 - פאקמן אכל נקודה ירוקה, וכל המפלצות לבנות.
 - קיימת מפלצת לבנה שניתן לאכול.
-- הזמן שנותר למפלצת להיות אכילה מספיק כדי שפאקמן יוכל להגיע אליה.
+- הזמן שנותר למפלצת להיות אכילה מספיק כדי שפאקמן יוכל להגיע אליה
+- הפאקמן ינסה לאכול לבן רק אם הוא מספיק קרוב (לפי מפת המרחקים והזמן שנותר למפלצת להיות אכילה).
 
 ### מה פאקמן עושה?
 - מחשב מסלול קצר ביותר אל המפלצת הלבנה.
@@ -96,11 +98,48 @@ allDistance(pacmanPosition, BLUE)
 ## סדר עדיפויות בין המצבים
 
 1. שחור – בריחה ממפלצת (חובה תמיד)  
-2. ורוד – אכילת נקודות רגילות (המטרה הראשית, ברירת מחדל)  
+2. לבן – אכילת מפלצת (רק אם אפשר להספיק לאכול אותה לפני שתפסיק להיות אכילה)
 3. ירוק – נקודת כוח (רק אם כדאי יותר מוורוד, לדוגמה קרוב יותר או מסוכן יותר)  
-4. לבן – אכילת מפלצת (רק אם אפשר להספיק לאכול אותה לפני שתפסיק להיות אכילה) 
+4. ורוד – אכילת נקודות רגילות (המטרה הראשית, ברירת מחדל)  
 
----
+------
+
+## Pseudo-code – קבלת החלטת תנועה
+
+```text
+Input: pacmanPos, ghosts[], map
+
+1. Compute distance map from pacman:
+   dists = allDistance(pacmanPos, BLUE)
+
+2. Mode 1 – Escape from black ghosts (highest priority)
+   closestBlack = find closest non-eatable ghost within 8 steps
+   if closestBlack exists:
+       dir = move in the direction that increases distance from closestBlack
+       return dir
+
+3. Mode 2 – Eat white ghosts (if any)
+   closestWhite = find closest eatable ghost (white)
+   if closestWhite exists and distance <= remaining eatable time and distance <= 4:
+       path = shortestPath(pacmanPos, closestWhite, BLUE)
+       return next step along path
+
+4. Mode 3 – Move to green power dot (if useful)
+   closestGreen = find closest green dot
+   if closestGreen exists and distance <= 4 steps:
+       path = shortestPath(pacmanPos, closestGreen, BLUE)
+       return next step along path
+
+5. Mode 4 – Eat pink points (default)
+   closestPink = find closest pink dot
+   if closestPink exists:
+       path = shortestPath(pacmanPos, closestPink, BLUE)
+       return next step along path
+
+6. If no move is possible:
+   return random legal direction
+
+
 
 ## מקרי קצה
 
