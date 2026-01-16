@@ -56,20 +56,23 @@ public class Ex3Algo implements PacManAlgo{
             // Mode 1
             int dir = escapeFromBlackGhosts(ghosts, dists);
             if(dir != Game.STAY) return dir;
-            
+
             // Mode 2
             dir = eatWhiteGhosts(ghosts, dists);
             if(dir != Game.STAY) return dir;
 
-            // Mode 3 - Go to green if it is useful
-            Pixel2D[] closestGreenPath = closestTargetPath(GREEN);
-            int greenPathLength = 0;
-            if(closestGreenPath != null) {
-                int distToGreen = dists.getPixel(closestGreenPath[closestGreenPath.length - 1]);
+            // Mode 3 – Go to green ONLY if green is NOT already active
+            if(!isGreenActive(ghosts)) {
+                Pixel2D[] closestGreenPath = closestTargetPath(GREEN);
+                if(closestGreenPath != null && closestGreenPath.length > 1) {
+                    int distToGreen = dists.getPixel(
+                            closestGreenPath[closestGreenPath.length - 1]
+                    );
 
-                // only go to green if it is within 8 steps (safe to reach before being in danger)
-                if(distToGreen >= 0 && distToGreen < 4) {
-                    return directionTo(closestGreenPath[1]);
+                    // go to green only if it is close enough
+                    if(distToGreen >= 0 && distToGreen < 4) {
+                        return directionTo(closestGreenPath[1]);
+                    }
                 }
             }
 
@@ -102,6 +105,14 @@ public class Ex3Algo implements PacManAlgo{
 		int ind = (int)(Math.random()*dirs.length);
 		return dirs[ind];
 	}
+
+    private boolean isGreenActive(GhostCL[] ghosts) {
+        for(GhostCL g : ghosts) {
+            if(g.remainTimeAsEatable(CODE) > 0)
+                return true;
+        }
+        return false;
+    }
 
     private int escapeFromBlackGhosts(GhostCL[] ghosts, Map2D dists) {
         int minGhostPath = -1;
@@ -209,7 +220,6 @@ public class Ex3Algo implements PacManAlgo{
     private int eatWhiteGhosts(GhostCL[] ghosts, Map2D dists) {
         Pixel2D target = null;
         int minDist = Integer.MAX_VALUE;
-        final int maxEatDist = 4;
 
         for(GhostCL g : ghosts) {
             double time = g.remainTimeAsEatable(CODE);
@@ -222,7 +232,7 @@ public class Ex3Algo implements PacManAlgo{
 
             // check if this ghost is the closest and the pacman has enough time to eat the ghost,
             // and the white ghost is close to the pacman - 4 squares long
-            if(ghostDist >= 0 && ghostDist < minDist && ghostDist < time - 1 && ghostDist <= maxEatDist) {
+            if(ghostDist >= 0 && ghostDist < minDist && ghostDist < time - 2) {
                 minDist = ghostDist;
                 target = ghostPixel;
             }
