@@ -1,4 +1,4 @@
-import server.GhostCL;
+package server;
 
 public interface PacmanGame {
     int INIT = 0;
@@ -12,25 +12,23 @@ public interface PacmanGame {
     int UP = 1;
     int DOWN = 3;
 
-    Character getKeyChar();
+    public String getPos(int id);
 
-    String getPos(int var1);
+    public GhostCL[] getGhosts(int id);
 
-    GhostCL[] getGhosts(int var1);
+    public int[][] getGame(int id);
 
-    int[][] getGame(int var1);
+    public void move(int dir);
 
-    String move(int var1);
+    public void play();
 
-    void play();
+    public void end(int id);
 
-    String end(int var1);
+    public String getData(int id);
 
-    String getData(int var1);
+    public int getStatus();
 
-    int getStatus();
+    public boolean isCyclic();
 
-    boolean isCyclic();
-
-    String init(int var1, String var2, boolean var3, long var4, double var6, int var8, int var9);
+    public void init(int scenario, String playerId, boolean cyclicMode, long randomSeed, double resolution, int dt, int level);
 }

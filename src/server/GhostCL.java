@@ -1,3 +1,5 @@
+package server;
+
 public interface GhostCL {
     int INIT = 0;
     int PLAY = 1;
@@ -6,13 +8,11 @@ public interface GhostCL {
     int RANDOM_WALK1 = 11;
     int GREEDY_SP = 12;
 
-    int getType();
+    public int getType();
 
-    String getPos(int var1);
+    public String getPos(int code);
 
-    String getInfo();
+    public double remainTimeAsEatable(int code);
 
-    double remainTimeAsEatable(int var1);
-
-    int getStatus();
+    public int getStatus();
 }

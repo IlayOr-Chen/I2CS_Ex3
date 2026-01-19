@@ -1,3 +1,5 @@
+package server;
+
 /** This is NOT a Junit class - as it tests GUI components which
  * should not be tested using Junit.
  * 

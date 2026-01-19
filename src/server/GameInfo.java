@@ -1,6 +1,8 @@
+package server;
+
 import algos.Ex3Algo;
 import algos.ManualAlgo;
-import server.PacManAlgo;
+
 /**
  * This class contains all the needed parameters for the Pacman game.
  * Make sure you update your details below!

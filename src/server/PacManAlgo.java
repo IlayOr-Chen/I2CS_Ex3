@@ -1,5 +1,7 @@
-public interface PacManAlgo {
-    String getInfo();
+package server;
 
-    int move(PacmanGame var1);
+public interface PacManAlgo {
+    public String getInfo();
+
+    public int move(PacmanGame game);
 }
