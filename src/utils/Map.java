@@ -1,5 +1,4 @@
-import utils.Index2D;
-import utils.Pixel2D;
+package utils;
 
 import java.util.LinkedList;
 import java.util.Queue;
@@ -354,7 +353,7 @@ public class Map implements Map2D {
      * Computes the shortest distance from a starting pixel to all other pixels.
      * @param start starting pixel
      * @param obsColor obstacle color
-     * @return a new Map2D containing distance values
+     * @return a new utils.Map2D containing distance values
      * @throws RuntimeException if start is null or outside the map when cyclic is false
      */
     @Override

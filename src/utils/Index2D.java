@@ -1,3 +1,5 @@
+package utils;
+
 public class Index2D implements Pixel2D {
     private int _x, _y;
     public Index2D() {this(0,0);}
