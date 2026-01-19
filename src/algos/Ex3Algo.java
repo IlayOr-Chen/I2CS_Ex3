@@ -1,7 +1,13 @@
-import exe.ex3.game.Game;
-import exe.ex3.game.GhostCL;
-import exe.ex3.game.PacManAlgo;
-import exe.ex3.game.PacmanGame;
+package algos;
+
+import server.Game;
+import server.GhostCL;
+import server.PacManAlgo;
+import server.PacmanGame;
+import utils.Index2D;
+import utils.Map;
+import utils.Map2D;
+import utils.Pixel2D;
 
 import java.awt.*;
 
@@ -11,7 +17,7 @@ import java.awt.*;
  * This code is a very simple example (random-walk algorithm).
  * Your task is to implement (here) your PacMan algorithm.
  */
-public class Ex3Algo implements PacManAlgo{
+public class Ex3Algo implements PacManAlgo {
 	private int _count;
     private Pixel2D pacmanPos;
     private Map2D map;
@@ -19,8 +25,8 @@ public class Ex3Algo implements PacManAlgo{
     private static final int CODE = 0;
     private static final int BLUE = Game.getIntColor(Color.BLUE, CODE);
     private static final int PINK = Game.getIntColor(Color.PINK, CODE);
-    private static final int BLACK = Game.getIntColor(Color.BLACK, CODE);
     private static final int GREEN = Game.getIntColor(Color.GREEN, CODE);
+    private static final int BLACK = Game.getIntColor(Color.BLACK, CODE);
     private static final int WHITE = Game.getIntColor(Color.WHITE, CODE);
 
 	public Ex3Algo() {_count=0;}
@@ -29,7 +35,7 @@ public class Ex3Algo implements PacManAlgo{
 	 *  Add a short description for the algorithm as a String.
 	 */
 	public String getInfo() {
-		return null;
+		return "This is a automatic algorithm for the PacMan.";
 	}
 	@Override
 	/**
@@ -78,7 +84,7 @@ public class Ex3Algo implements PacManAlgo{
 
             // Mode 4
             Pixel2D[] closestPinkPath = closestTargetPath(PINK);
-            if(closestPinkPath != null)
+            if(closestPinkPath != null && closestPinkPath.length > 1)
                 return directionTo(closestPinkPath[1]);
 		}
 
@@ -127,6 +133,8 @@ public class Ex3Algo implements PacManAlgo{
             String[] ghostPos = g.getPos(CODE).toString().split(",");
             Pixel2D ghostPixel = new Index2D(Integer.parseInt(ghostPos[0]), Integer.parseInt(ghostPos[1]));
 
+            if(map.getPixel(ghostPixel) == BLUE || map.getPixel(ghostPixel) == BLACK) continue;
+
             // find the shortest path from the pacman to the current ghost
             Pixel2D[] ghostPath = map.shortestPath(pacmanPos, ghostPixel, BLUE);
             int ghostPathLength = ghostPath.length;
@@ -138,8 +146,8 @@ public class Ex3Algo implements PacManAlgo{
             }
         }
 
-        // if I haven't found any ghosts of the smallest path from the pacman to a ghost is smaller than 8 - ignore
-        if(closestGhost == null || minGhostPath >= 8) return Game.STAY;
+        // if I haven't found any ghosts of the smallest path from the pacman to a ghost is smaller than 6 - ignore
+        if(closestGhost == null || minGhostPath >= 6) return Game.STAY;
 
         return escapeGhost(closestGhost, dists);
     }
@@ -203,7 +211,7 @@ public class Ex3Algo implements PacManAlgo{
 
                 if(currPixelColor == color) {
                     Pixel2D[] path = map.shortestPath(pacmanPos, currPixel, BLUE);
-                    if(path != null) {
+                    if(path != null && path.length > 1) {
                         int pathLength = path.length;
 
                         if(minPath == -1 || minPath > pathLength) {

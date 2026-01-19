@@ -1,3 +1,6 @@
+import utils.Index2D;
+import utils.Pixel2D;
+
 import java.util.LinkedList;
 import java.util.Queue;
 
@@ -433,7 +436,7 @@ public class Map implements Map2D {
         // Computes the normalized y-coordinate:
         int newY = ((p.getY() % mapHeight) + mapHeight) % mapHeight;
 
-        // Returns a new Pixel2D instance with the normalized coordinates.
+        // Returns a new utils.Pixel2D instance with the normalized coordinates.
         return new Index2D(newX, newY);
     }
 }
