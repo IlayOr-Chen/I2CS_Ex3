@@ -1,4 +1,4 @@
-package resources;
+package utils;
 
 import javax.sound.sampled.*;
 import java.io.File;
@@ -8,7 +8,7 @@ public class Sound {
 
     public static void playLoop(String path) {
         try {
-            AudioInputStream audio = AudioSystem.getAudioInputStream(new File(path));
+            AudioInputStream audio = AudioSystem.getAudioInputStream(Sound.class.getResource(path));
             clip = AudioSystem.getClip();
             clip.open(audio);
             clip.loop(Clip.LOOP_CONTINUOUSLY);
