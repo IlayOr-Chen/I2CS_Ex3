@@ -37,7 +37,7 @@ allDistance(pacmanPosition, BLUE)
 
 ### מתי נכנסים למצב זה?
 - קיימת מפלצת שחורה (שאינה אכילה).
-- המרחק שלה מפאקמן קטן מ־8 משבצות.
+- המרחק שלה מפאקמן קטן מ־6 משבצות.
 
 ### מה פאקמן עושה?
 - בוחר כיוון תנועה שמגדיל את המרחק בינו לבין המפלצת השחורה הקרובה ביותר.
@@ -116,7 +116,7 @@ Input: pacmanPos, ghosts[], map
    dists = allDistance(pacmanPos, BLUE)
 
 2. Mode 1 – Escape from black ghosts (highest priority)
-   closestBlack = find closest non-eatable ghost within 8 steps
+   closestBlack = find closest non-eatable ghost within 6 steps
    if closestBlack exists:
        dir = move in the direction that increases distance from closestBlack
        return dir
