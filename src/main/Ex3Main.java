@@ -1,4 +1,7 @@
+package main;
+
 import server.*;
+import utils.Sound;
 
 /**
  * Ex3, School of Computer Science, Ariel University.
@@ -40,6 +43,8 @@ public class Ex3Main {
         else
             man = GameInfo.MANUAL_ALGO;
 
+        Sound.playLoop("/resources/pacman_sound.wav");
+
         while(game.getStatus()!= PacmanGame.DONE) {
             if(!gui.isAutomatic() && StdDraw.hasNextKeyTyped())
                 _cmd = StdDraw.nextKeyTyped();
@@ -50,7 +55,10 @@ public class Ex3Main {
             gui.drawMap();
             StdDraw.pause(120);
         }
+        Sound.stop();
         game.end(-1);
     }
     public static Character getCMD() {return _cmd;}
+    public static void clearCMD() {_cmd = null;}
+
 }
