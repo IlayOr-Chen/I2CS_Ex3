@@ -2,7 +2,6 @@ package utils;
 
 public class Index2D implements Pixel2D {
     private int _x, _y;
-    public Index2D() {this(0,0);}
     public Index2D(int x, int y) {_x=x;_y=y;}
     public Index2D(Pixel2D t) {this(t.getX(), t.getY());}
     @Override

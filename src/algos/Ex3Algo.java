@@ -27,9 +27,12 @@ public class Ex3Algo implements PacManAlgo {
     private static final int PINK = Game.getIntColor(Color.PINK, CODE);
     private static final int GREEN = Game.getIntColor(Color.GREEN, CODE);
     private static final int BLACK = Game.getIntColor(Color.BLACK, CODE);
-    private static final int WHITE = Game.getIntColor(Color.WHITE, CODE);
 
+    /**
+     * Constructs a new automatic Pac-Man algorithm.
+     */
 	public Ex3Algo() {_count=0;}
+
 	@Override
 	/**
 	 *  Add a short description for the algorithm as a String.
@@ -37,10 +40,18 @@ public class Ex3Algo implements PacManAlgo {
 	public String getInfo() {
 		return "This is a automatic algorithm for the PacMan.";
 	}
+
 	@Override
-	/**
-	 * This ia the main method - that you should design, implement and test.
-	 */
+    /**
+     * Computes the next move of the Pac-Man.
+     *
+     * The method analyzes the current game state and applies
+     * a prioritized decision logic:
+     * escape → eat ghosts → collect power dots → collect points.
+     *
+     * @param game the current Pac-Man game instance
+     * @return an integer representing the chosen movement direction
+     */
 	public int move(PacmanGame game) {
 		if(_count==0 || _count==300) {
 			int[][] board = game.getGame(0);
@@ -51,6 +62,7 @@ public class Ex3Algo implements PacManAlgo {
 			GhostCL[] ghosts = game.getGhosts(CODE);
 			printGhosts(ghosts);
 
+            // Parse Pac-Man position
             String[] p = pos.split(",");
             int x = Integer.parseInt(p[0]);
             int y = Integer.parseInt(p[1]);
@@ -59,15 +71,15 @@ public class Ex3Algo implements PacManAlgo {
 
             Map2D dists = map.allDistance(pacmanPos, BLUE);
 
-            // Mode 1
+            // Mode 1: Escape from black ghosts
             int dir = escapeFromBlackGhosts(ghosts, dists);
             if(dir != Game.STAY) return dir;
 
-            // Mode 2
+            // Mode 2: Eat white (eatable) ghosts
             dir = eatWhiteGhosts(ghosts, dists);
             if(dir != Game.STAY) return dir;
 
-            // Mode 3 – Go to green ONLY if green is NOT already active
+            // Mode 3: Go to green ONLY if green is NOT already active
             if(!isGreenActive(ghosts)) {
                 Pixel2D[] closestGreenPath = closestTargetPath(GREEN);
                 if(closestGreenPath != null && closestGreenPath.length > 1) {
@@ -82,7 +94,7 @@ public class Ex3Algo implements PacManAlgo {
                 }
             }
 
-            // Mode 4
+            // Mode 4: Collect pink points
             Pixel2D[] closestPinkPath = closestTargetPath(PINK);
             if(closestPinkPath != null && closestPinkPath.length > 1)
                 return directionTo(closestPinkPath[1]);
@@ -91,6 +103,10 @@ public class Ex3Algo implements PacManAlgo {
 		_count++;
 		return randomDir();
 	}
+
+    /**
+     * Prints the game board to the console.
+     */
 	private static void printBoard(int[][] b) {
 		for(int y =0;y<b[0].length;y++){
 			for(int x =0;x<b.length;x++){
@@ -100,18 +116,34 @@ public class Ex3Algo implements PacManAlgo {
 			System.out.println();
 		}
 	}
+
+    /**
+     * Prints ghosts information to the console.
+     */
 	private static void printGhosts(GhostCL[] gs) {
 		for(int i=0;i<gs.length;i++){
 			GhostCL g = gs[i];
 			System.out.println(i+") status: "+g.getStatus()+",  type: "+g.getType()+",  pos: "+g.getPos(0)+",  time: "+g.remainTimeAsEatable(0));
 		}
 	}
+
+    /**
+     * Chooses a random legal direction.
+     *
+     * @return a random movement direction
+     */
 	private static int randomDir() {
 		int[] dirs = {Game.UP, Game.LEFT, Game.DOWN, Game.RIGHT};
 		int ind = (int)(Math.random()*dirs.length);
 		return dirs[ind];
 	}
 
+    /**
+     * Checks if any ghost is currently eatable.
+     *
+     * @param ghosts array of ghosts
+     * @return true if at least one ghost is eatable
+     */
     private boolean isGreenActive(GhostCL[] ghosts) {
         for(GhostCL g : ghosts) {
             if(g.remainTimeAsEatable(CODE) > 0)
@@ -120,6 +152,13 @@ public class Ex3Algo implements PacManAlgo {
         return false;
     }
 
+    /**
+     * Attempts to escape from the closest dangerous ghost.
+     *
+     * @param ghosts array of ghosts
+     * @param dists distance map from Pac-Man
+     * @return escape direction or STAY if no threat exists
+     */
     private int escapeFromBlackGhosts(GhostCL[] ghosts, Map2D dists) {
         int minGhostPath = -1;
         Pixel2D closestGhost = null;
@@ -152,6 +191,13 @@ public class Ex3Algo implements PacManAlgo {
         return escapeGhost(closestGhost, dists);
     }
 
+    /**
+     * Selects the direction that maximizes distance from a ghost.
+     *
+     * @param ghost the threatening ghost
+     * @param dists distance map
+     * @return safest movement direction
+     */
     private int escapeGhost(Pixel2D ghost, Map2D dists) {
         int bestDir = Game.STAY;
         int bestDist = dists.getPixel(ghost);
@@ -177,6 +223,9 @@ public class Ex3Algo implements PacManAlgo {
         return bestDir;
     }
 
+    /**
+     * Computes the next pixel according to direction (cyclic movement).
+     */
     private Pixel2D pixelStep(Pixel2D from, int dir) {
         int x = from.getX();
         int y = from.getY();
@@ -200,6 +249,12 @@ public class Ex3Algo implements PacManAlgo {
         return new Index2D(x, y);
     }
 
+    /**
+     * Finds the shortest path to the closest pixel of a given color.
+     *
+     * @param color target color
+     * @return path to the closest target or null if none exists
+     */
     private Pixel2D[] closestTargetPath(int color) {
         Pixel2D[] ans = null;
         int minPath = -1;
@@ -225,6 +280,13 @@ public class Ex3Algo implements PacManAlgo {
         return ans;
     }
 
+    /**
+     * Attempts to chase and eat white ghosts.
+     *
+     * @param ghosts array of ghosts
+     * @param dists distance map
+     * @return movement direction or STAY if not possible
+     */
     private int eatWhiteGhosts(GhostCL[] ghosts, Map2D dists) {
         Pixel2D target = null;
         int minDist = Integer.MAX_VALUE;
@@ -249,12 +311,17 @@ public class Ex3Algo implements PacManAlgo {
         if(target == null) return Game.STAY;
 
         Pixel2D[] path = map.shortestPath(pacmanPos, target, BLUE);
-        if(path == null || path.length < 2) return Game.STAY;
+        if(path == null || path.length <= 3) return Game.STAY;
 
         return directionTo(path[1]);
     }
 
-
+    /**
+     * Converts a neighboring pixel into a movement direction.
+     *
+     * @param next the next pixel on the path
+     * @return movement direction
+     */
     private int directionTo(Pixel2D next) {
         int px = pacmanPos.getX();
         int py = pacmanPos.getY();

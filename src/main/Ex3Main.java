@@ -28,37 +28,66 @@ public class Ex3Main {
         play1();
     }
 
+    /**
+     * Initializes and runs a single game session.
+     */
     public static void play1() {
     	Game game = new Game();
-        game.init(GameInfo.CASE_SCENARIO, GameInfo.MY_ID, GameInfo.CYCLIC_MODE, GameInfo.RANDOM_SEED, GameInfo.RESOLUTION_NORM, GameInfo.DT, -1);
 
+        // Initialize the game using predefined parameters from GameInfo
+        game.init(GameInfo.MY_ID, GameInfo.CYCLIC_MODE);
+
+        // Create the game GUI and show the start screen
         GameGui gui = new GameGui(game);
         gui.showStartScreen();
 
+        // Start the game engine
         game.play();
 
+        // Choose algorithm: automatic or manual
         PacManAlgo man;
         if(gui.isAutomatic())
             man = GameInfo.MY_ALGO;
         else
             man = GameInfo.MANUAL_ALGO;
 
+        // Start background music
         Sound.playLoop("/resources/pacman_sound.wav");
 
+        // Main game loop - runs until the game is finished
         while(game.getStatus()!= PacmanGame.DONE) {
+            // Read keyboard input only in manual mode
             if(!gui.isAutomatic() && StdDraw.hasNextKeyTyped())
                 _cmd = StdDraw.nextKeyTyped();
 
+            // Ask the algorithm for the next move
             int dir = man.move(game);
+
+            // Apply the move to the game
             game.move(dir);
 
+            // Redraw the game board
             gui.drawMap();
-            StdDraw.pause(120);
+            StdDraw.pause(60);
         }
+
+        // Stop background music when the game ends
         Sound.stop();
+
+        // End the game and print results
         game.end(-1);
     }
+
+    /**
+     * Returns the last keyboard command entered by the user.
+     *
+     * @return the current command character, or null if none exists
+     */
     public static Character getCMD() {return _cmd;}
+
+    /**
+     * Clears the stored keyboard command.
+     */
     public static void clearCMD() {_cmd = null;}
 
 }

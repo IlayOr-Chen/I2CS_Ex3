@@ -15,6 +15,10 @@ public class Game implements PacmanGame {
     private boolean cyclic;
     private String playerId;
 
+
+    /**
+     * Constructor: initializes the board, PacMan, and ghosts.
+     */
     public Game() {
         // the board of the game map:
         int[][] board = {
@@ -51,6 +55,12 @@ public class Game implements PacmanGame {
         };
     }
 
+    /**
+     * Converts a Color to an internal integer code.
+     * @param c the color
+     * @param code unused
+     * @return integer code for the color
+     */
     public static int getIntColor(Color c, int code) {
         if(c.equals(Color.BLUE)) return 1;
         else if(c.equals(Color.PINK)) return 2;
@@ -60,20 +70,28 @@ public class Game implements PacmanGame {
         return 0;
     }
 
+    /**
+     * Moves PacMan in the specified direction and updates ghosts.
+     * Handles scoring, eatable ghosts, and collisions.
+     * @param dir direction of PacMan (UP, DOWN, LEFT, RIGHT)
+     */
     @Override
     public void move(int dir) {
         if(status != PLAY) return;
 
+        // calculate next PacMan position
         Index2D next = map.step(pacman, dir);
         if(map.isFree(next)) pacman = next;
 
         int cell = map.get(pacman);
 
+        // eating a pink cell
         if(cell == GameMap.PINK) {
             score++;
             map.set(pacman, GameMap.EMPTY);
         }
 
+        // eating a green cell – all ghosts become eatable for 7 seconds
         if(cell == GameMap.GREEN) {
             score += 5;
             long until = System.currentTimeMillis() + 7000;
@@ -82,6 +100,7 @@ public class Game implements PacmanGame {
             map.set(pacman, GameMap.EMPTY);
         }
 
+        // move ghosts and check collisions with PacMan
         for(Ghost g : ghosts) {
             g.moveRandom(map);
 
@@ -90,14 +109,19 @@ public class Game implements PacmanGame {
                     score += 10;
                     g.reset(new Index2D(10,10));
                 } else {
-                    status = DONE;
+                    status = LOSE;
                 }
             }
         }
 
+        // check if any pinks are left
         checkPinksLeft();
     }
 
+    /**
+     * Checks if any pink cells remain on the map.
+     * If none remain, the game is marked as DONE.
+     */
     public void checkPinksLeft() {
         boolean pinkLeft = false;
         for(int y=0; y<map.getHeight(); y++) {
@@ -115,47 +139,57 @@ public class Game implements PacmanGame {
             status = DONE;
     }
 
+    /** Starts the game by setting status to PLAY */
     @Override
     public void play() { status = PLAY; }
+
+    /** Returns the current game status */
     @Override
     public int getStatus() { return status; }
+
+    /** Returns the current board as a 2D int array */
     @Override
     public int[][] getGame(int id) { return map.getBoard(); }
+
+    /** Returns the array of ghosts */
     @Override
     public GhostCL[] getGhosts(int id) { return ghosts; }
+
+    /** Returns PacMan's current position as a string "x,y" */
     @Override
     public String getPos(int id) { return pacman.getX()+","+pacman.getY(); }
+
+    /** Ends the game by setting status to DONE */
     @Override
-    public String getData(int id) { return "Score=" + score; }
+    public void end(int id) { status = DONE; }
+
+    /**
+     * Initializes the game with parameters
+     * @param playerId player identifier
+     * @param cyclicMode whether the map wraps around edges
+     */
     @Override
-    public boolean isCyclic() { return cyclic; }
-    @Override
-    public void end(int id) { status = DONE;}
-    @Override
-    public void init(int scenario, String playerId, boolean cyclicMode, long randomSeed, double resolution, int dt, int level){
+    public void init(String playerId, boolean cyclicMode){
         this.playerId = playerId;
         this.cyclic = cyclicMode;
     }
 
-    public String getPlayerId() {
-        return playerId;
-    }
-    public int getWidth() {
-        return map.getWidth();
-    }
+    /** Returns the player ID */
+    public String getPlayerId() { return playerId; }
 
-    public int getHeight() {
-        return map.getHeight();
-    }
+    /** Returns the width of the map */
+    public int getWidth() { return map.getWidth(); }
 
-    public Index2D getPacman() {
-        return pacman;
-    }
+    /** Returns the height of the map */
+    public int getHeight() { return map.getHeight(); }
 
-    public Ghost[] getGhosts() {
-        return ghosts;
-    }
+    /** Returns PacMan's position as Index2D */
+    public Index2D getPacman() { return pacman; }
 
+    /** Returns the array of ghosts */
+    public Ghost[] getGhosts() { return ghosts; }
+
+    /** Returns current score */
     public int getScore() {
         return score;
     }
