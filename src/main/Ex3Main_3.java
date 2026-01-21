@@ -21,7 +21,7 @@ import utils.Sound;
  * you are asked to upload your results (at least one for each level), part of your grade will be based on those results.
  *
  */
-public class Ex3Main {
+public class Ex3Main_3 {
     private static Character _cmd;
 
     public static void main(String[] args) {

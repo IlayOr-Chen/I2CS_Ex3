@@ -91,26 +91,26 @@ public class GameGui {
         for(int x=0;x<b.length;x++) {
             for(int y=0;y<b[0].length;y++) {
                 if(b[x][y] == GameMap.BLUE)
-                    StdDraw.picture(x, y, "./resources/wall.png", cellSize, cellSize);
+                    StdDraw.picture(x, y, "resources/wall.png", cellSize, cellSize);
                 else if(b[x][y] == GameMap.PINK)
-                    StdDraw.picture(x, y, "./resources/pink_circle.jpg", cellSize, cellSize);
+                    StdDraw.picture(x, y, "resources/pink_circle.jpg", cellSize, cellSize);
                 else if(b[x][y] == GameMap.GREEN)
-                    StdDraw.picture(x, y, "./resources/green_circle.jpg", cellSize, cellSize);
+                    StdDraw.picture(x, y, "resources/green_circle.jpg", cellSize, cellSize);
                 else if(b[x][y] == GameMap.EMPTY)
-                    StdDraw.picture(x, y, "./resources/floor.jpg", cellSize, cellSize);
+                    StdDraw.picture(x, y, "resources/floor.jpg", cellSize, cellSize);
             }
         }
 
         // Draw Pac-Man
-        StdDraw.picture(game.getPacman().getX(), game.getPacman().getY(), "./resources/pacman.jpg", cellSize, cellSize);
+        StdDraw.picture(game.getPacman().getX(), game.getPacman().getY(), "resources/pacman.jpg", cellSize, cellSize);
 
         // Draw Ghosts
         for(Ghost g : game.getGhosts()) {
             Index2D gPos = g.getPos2D();
             if(g.isEatable())
-                StdDraw.picture(gPos.getX(), gPos.getY(), "./resources/white_ghost.jpg", cellSize, cellSize);
+                StdDraw.picture(gPos.getX(), gPos.getY(), "resources/white_ghost.jpg", cellSize, cellSize);
             else
-                StdDraw.picture(gPos.getX(), gPos.getY(), "./resources/ghost.jpg", cellSize, cellSize);
+                StdDraw.picture(gPos.getX(), gPos.getY(), "resources/ghost.jpg", cellSize, cellSize);
         }
 
         // Draw score

@@ -1,6 +1,6 @@
 package algos;
 
-import main.Ex3Main;
+import main.Ex3Main_3;
 import server.PacManAlgo;
 import server.PacmanGame;
 
@@ -32,7 +32,7 @@ public class ManualAlgo implements PacManAlgo {
         int ans = PacmanGame.ERR;
 
         // Read the last keyboard command
-        Character cmd = Ex3Main.getCMD();
+        Character cmd = Ex3Main_3.getCMD();
         if (cmd != null) {
             if (cmd == 'w') {ans = PacmanGame.UP;}
             if (cmd == 's') {ans = PacmanGame.DOWN;}
@@ -40,7 +40,7 @@ public class ManualAlgo implements PacManAlgo {
             if (cmd == 'd') {ans = PacmanGame.RIGHT;}
 
             // Clear the command after it was processed
-            Ex3Main.clearCMD();
+            Ex3Main_3.clearCMD();
         }
         return  ans;
     }
