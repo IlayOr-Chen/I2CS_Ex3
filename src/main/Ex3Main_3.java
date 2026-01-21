@@ -52,7 +52,7 @@ public class Ex3Main_3 {
             man = GameInfo.MANUAL_ALGO;
 
         // Start background music
-        Sound.playLoop("/resources/pacman_sound.wav");
+        Sound.playLoop("resources/pacman_sound.wav");
 
         // Main game loop - runs until the game is finished
         while(game.getStatus()!= PacmanGame.DONE) {
